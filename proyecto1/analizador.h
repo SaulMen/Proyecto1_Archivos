@@ -17,6 +17,7 @@ class Analizador
         string replace_txt(string str, const string& from, const string& to);
         string analizar(string entrada);
         string identificarParametros(string comando,vector<string> parametros);
+        string obtenerRuta(string param,vector<string> parametros);
 };
 
 #endif
