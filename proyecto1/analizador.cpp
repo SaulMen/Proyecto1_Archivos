@@ -33,8 +33,10 @@ string Analizador::analizar(string entrada){
             //if(comando!="execute") comando.erase(0,1);
             cout<<"comando: "<<comando<<endl;
         }else{
+            if(cmdentrada.at(i).substr(cmdentrada.at(i).length()-1)=="\n") 
+            cmdentrada.at(i).pop_back();
+
             parametros.push_back(cmdentrada.at(i));
-            //cout<<cmdentrada.at(i)<<endl;
         }
         
     }
@@ -108,12 +110,12 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
                 param = replace_txt(param, ">size=", "");
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Tamano = param;
-                cout<<"tamaño: "<<param;
+                cout<<"tamaño:"<<param<<endl;;
             } else if(param.find(">unit=") == 0){
                 param = replace_txt(param, ">unit=", "");
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Dimensional = param;
-                cout<<"unidad: "<<param;
+                cout<<"unidad: "<<param<<endl;;
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
@@ -204,6 +206,26 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
                 param = replace_txt(param, ">id=", "");
                 cmd.param.Id = param;
                 cout<<"Id: "<<param<<endl;
+            }
+        }
+        cmd.identificarCMD(cmd.param);
+    }else if(comando == "mkfs"){
+        cmd.param.Comando = "mkfs";
+        cout<<"ejecutando: mkfs"<<endl;
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">id=") == 0){
+                param = replace_txt(param, ">id=", "");
+                cmd.param.Id = param;
+                cout<<"Id: "<<param<<endl;
+            }else if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                cmd.param.Ubicacion = obtenerRuta(param, parametros);
+                cout<<"ubicacion: "<<param<<endl;
+            }else if(param.find(">type=") == 0){
+                param = replace_txt(param, ">type=", "");
+                cmd.param.Tipo = param;
+                cout<<"Tipo: "<<param<<endl;
             }
         }
         cmd.identificarCMD(cmd.param);

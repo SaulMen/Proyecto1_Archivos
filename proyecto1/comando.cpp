@@ -50,10 +50,29 @@ void Comando::identificarCMD(Parametros param)
             cout<<"Error, parametros no acepatados o aquí"<<endl;
         }
     }else if(param.Comando=="mount"){
-        cout<<"Se montará el archivo"<<endl;
+        cout<<"Se montará la partición"<<endl;
+        montar(param.Ubicacion, param.Nombre);
     }else if(param.Comando=="unmount"){
-        cout<<"Se desmontará el archivo"<<endl;
+        desmontar(param.Id);
+        cout<<"Se desmontará la partición"<<endl;
+    }else if(param.Comando=="mkfs"){
+        if(existeId(param.Id)){
+            formatear(param.Id, param.Tipo, param.Fs);
+        }else{
+            cout<<"Error, no existe el ID"<<endl;
+        }
     }
+}
+
+vector<string> Comando::split_id(string entrada){
+    stringstream text_to_split(entrada);
+    string segment;
+    vector<string> splited;
+
+    while(std::getline(text_to_split, segment, ',')){
+        splited.push_back(segment);
+    }
+    return splited;
 }
 
 void Comando::crear_carpeta(string ubicacion){
@@ -243,4 +262,94 @@ string tipo, string fit, string Delete, string Add){
     }else{
         cout<<"No existe el archivo binario.............."<<endl;
     }
+}
+
+void Comando::montar(string ubi, string nombre){
+    FILE *file;
+    string nombre_disco;
+    string nombre_part;
+    string cara;
+    string id;
+    //Obtengo el nombre del disco
+    string ruta = ubi;
+    int longitud = ubi.size();
+    while(ruta.at(longitud-1) != '/'){
+        cara = ruta.at(longitud-1);
+        nombre_disco.insert(0,cara);
+        ruta.pop_back();
+        longitud --;
+    }
+    longitud = nombre_disco.size();
+    while(nombre_disco.at(longitud-1) != '.'){
+        nombre_disco.pop_back();
+        longitud --;
+    }
+    nombre_disco.pop_back();
+
+
+    nombre_part=nombre.at(nombre.size()-1);
+    id="44"+nombre_part+nombre_disco;
+
+    file = fopen(ubi.c_str(), "r");
+    if (file != NULL) {
+        //Mostrar un menu para ver las particiones montadas o solo mostrar de una vez
+        cout<<"Montando partición con nombre: "<<id<<endl;
+        ids+=id+",";
+        fclose(file);
+    }else{
+        cout<<"Error, la ubicación no existe"<<endl;
+    }
+    cout<<ids<<endl;
+}
+
+void Comando::desmontar(string id){
+    cout<<"Desmontando..."<<endl;
+
+}
+
+bool Comando::existeId(string id){
+    vector<string> id_spliteado = split_id(ids);
+    for(int i=0;i<id_spliteado.size();i++){
+        if(id==id_spliteado.at(i)){
+            cout<<"Se encontró: "<<id<<endl;
+            return true;
+        }
+        cout<<"los ids: "<<id_spliteado.at(i)<<endl;
+    }
+    return false;
+}
+
+void Comando::formatear(string id, string type, string fs){
+    if(fs==" ") fs = "2fs";
+    cout<<"Se formaterá completamente en:"<<id<<endl;
+    SuperBloque super;
+    super.s_filesystem_type=2; //identificacion del sistema de archivos
+    super.s_inodes_count=2; //numero actual de inodos
+    super.s_blocks_count=2; //numero actual de bloques
+    //super.s_free_blocks_count=98; //bloques libres
+    //super.s_free_inodes_count=98; //inodos libres
+    super.s_mtime=time(0); //ultima fecha que fue montado
+    //super.s_umtime=time(0); //cuando se desmonte
+    super.s_mnt_count=1; //cuantas veces fue montado el sistema
+    super.s_magic=61267;//0xEF53
+    /*super.s_inode_s=0;//Tamaño del inodo
+    super.s_block_s=0;//Tamaño del bloque
+    super.s_firts_ino=0;//Primer inodo libre
+    super.s_first_blo=0;//primero bloque libre
+    super.s_bm_inode_start=0;//inicio del bitmap de inodos
+    super.s_bm_block_start=0;//inicio del bitmap de bloques
+    super.s_inode_start=0;//inicion de la tabla de inodos
+    super.s_block_start=0;//inicio de la table de bloques*/
+
+
+    /*
+        Crear mi capeta en /->invertido y mi archiov user.txt en el disco a formatear
+        Validar el usuario e ir actualizando mi mbr y mis particiones
+
+        Comenzar con las validaciones hasta lo que he hecho desde el fdisk
+
+        Comenzar a ver como realizó los reportes-> para empezar de lleno el sábado
+    */
+
+
 }
