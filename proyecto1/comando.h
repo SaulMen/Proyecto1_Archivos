@@ -12,6 +12,7 @@ using namespace std;
 
 //Podría añadir seguido del id la ubicacion del disco 
 string ids = "";
+string imp_ids="";
 
 typedef struct{
     string Comando = " ";
@@ -40,9 +41,9 @@ typedef struct{
 typedef struct{
     char part_status;
     char part_fit;
-    char part_start;
-    char part_s;
-    char part_next = -1;
+    int part_start;
+    int part_s;
+    int part_next=-1;
     char part_name[16];
 }EBR;
 
@@ -109,10 +110,15 @@ class Comando
         void eliminar_archivo(string ubi);
         void crear_particion(string tam, string ubicacion, string nombre, string unit,
         string tipo, string fit, string Delete, string Add);
+        void eliminar_particion(string nombre, string ubicacion);
+        void agregar_particion(string tam, string unit, string nombre, string ubicacion);
         void montar(string ubi, string nombre);
         void desmontar(string id);
         bool existeId(string id);
         void formatear(string id, string type, string fs);
+        void reporte(string id, string ubicacion, string nombre);
+        void reporte_mbr(string id, string ubicacion);
+        void reporte_disk(string id, string ubicacion);
 };
 
 #endif

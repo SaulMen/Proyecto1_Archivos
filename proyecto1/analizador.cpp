@@ -4,7 +4,6 @@ vector<string> Analizador::split_txt(string text){
     stringstream text_to_split(text);
     string segment;
     vector<string> splited;
-
     while(std::getline(text_to_split, segment, ' ')){
         splited.push_back(segment);
     }
@@ -31,10 +30,16 @@ string Analizador::analizar(string entrada){
         if(i == 0){
             comando = cmdentrada.at(i);
             //if(comando!="execute") comando.erase(0,1);
-            cout<<"comando: "<<comando<<endl;
+            if(comando=="\n"||comando==" \n"||comando==" ") continue;
+            if(comando[comando.size()-1]=='\n') comando.pop_back();
+            //cout<<"comando: "<<comando<<endl;
         }else{
-            if(cmdentrada.at(i).substr(cmdentrada.at(i).length()-1)=="\n") 
-            cmdentrada.at(i).pop_back();
+            if(cmdentrada.at(i).length()>0){
+                if(cmdentrada.at(i).substr(cmdentrada.at(i).length()-1)=="\n"){
+                    cmdentrada.at(i).pop_back();
+                }
+            }
+            
 
             parametros.push_back(cmdentrada.at(i));
         }
@@ -80,7 +85,9 @@ string Analizador::obtenerRuta(string param, vector<string> parametros){
 
 string Analizador::identificarParametros(string comando, vector<string> parametros){
     string param = "";
-    cout<<"Entra el comando: "<<comando<<endl;
+
+    if(comando=="\n"||comando==" \n"||comando==" ") return "";
+    //cout<<"Entra el comando: "<<comando<<endl;
     if(comando == "execute"){
         cmd.param.Comando = "execute";
         cout<<"ejecutando: execute"<<endl;
@@ -110,22 +117,24 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
                 param = replace_txt(param, ">size=", "");
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Tamano = param;
-                cout<<"tamaño:"<<param<<endl;;
+                cout<<" -tamaño:"<<param;
             } else if(param.find(">unit=") == 0){
                 param = replace_txt(param, ">unit=", "");
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Dimensional = param;
-                cout<<"unidad: "<<param<<endl;;
+                cout<<" -unidad: "<<param;
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
+                cout<<" -ubicación: "<<cmd.param.Ubicacion;
             }else if(param.find(">fit=")==0){
                 param = replace_txt(param, ">fit=", "");
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Fit = param;
-                cout<<"fit: "<<param;
+                cout<<" -fit: "<<param;
             }
         }
+        cout<<endl<<endl;
         cmd.identificarCMD(cmd.param);
     }else if(comando == "rmdisk"){
         cmd.param.Comando = "rmdisk";
@@ -136,6 +145,7 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
             if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
+                cout<<" -ubicacion: "<<cmd.param.Ubicacion<<endl;
             }
         }
         cmd.identificarCMD(cmd.param);
@@ -148,37 +158,38 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
             if(param.find(">size=") == 0){
                 param = replace_txt(param, ">size=", "");
                 cmd.param.Tamano = param;
-                cout<<"tamaño: "<<param<<endl;
+                cout<<" -tamaño: "<<param;
             }else if(param.find(">unit=") == 0){
                 param = replace_txt(param, ">unit=", "");
-                cmd.param.Dimensional = param;
-                cout<<"unidad: "<<param<<endl;
+                cmd.param.Unit = param;
+                cout<<" -unidad: "<<param;
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
-                cout<<"ubicacion: "<<cmd.param.Ubicacion<<endl;
+                cout<<" -ubicacion: "<<cmd.param.Ubicacion<<endl;
             }else if(param.find(">fit=")==0){
                 param = replace_txt(param, ">fit=", "");
                 cmd.param.Fit = param;
-                cout<<"fit: "<<param<<endl;
+                cout<<" -fit: "<<param;
             }else if(param.find(">name=")==0){
                 param = replace_txt(param, ">name=", "");
                 cmd.param.Nombre = param;
-                cout<<"nombre: "<<param<<endl;
+                cout<<" -nombre: "<<param;
             }else if(param.find(">type=")==0){
                 param = replace_txt(param, ">type=", "");
                 cmd.param.Tipo = param;
-                cout<<"type: "<<param<<endl;
+                cout<<" -type: "<<param;
             }else if(param.find(">delete=")==0){
                 param = replace_txt(param, ">delete=", "");
                 cmd.param.Delete = param;
-                cout<<"delete: "<<param<<endl;
+                cout<<" -delete: "<<param;
             }else if(param.find(">add=")==0){
-                param = replace_txt(param, ">name=", "");
+                param = replace_txt(param, ">add=", "");
                 cmd.param.Add = param;
-                cout<<"add: "<<param<<endl;
+                cout<<" -add: "<<param;
             }
         }
+        cout<<endl<<endl;
         cmd.identificarCMD(cmd.param);
 
     }else if(comando == "mount"){
@@ -189,13 +200,14 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
             if(param.find(">name=") == 0){
                 param = replace_txt(param, ">name=", "");
                 cmd.param.Nombre = param;
-                cout<<"nombre: "<<param<<endl;
+                cout<<" -nombre: "<<param;
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
-                cout<<"ubicacion: "<<param<<endl;
+                cout<<" -ubicacion: "<<cmd.param.Ubicacion;
             }
         }
+        cout<<endl<<endl;
         cmd.identificarCMD(cmd.param);
     }else if(comando == "unmount"){
         cmd.param.Comando = "unmount";
@@ -205,9 +217,10 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
             if(param.find(">id=") == 0){
                 param = replace_txt(param, ">id=", "");
                 cmd.param.Id = param;
-                cout<<"Id: "<<param<<endl;
+                cout<<"Id: "<<param;
             }
         }
+        cout<<endl<<endl;
         cmd.identificarCMD(cmd.param);
     }else if(comando == "mkfs"){
         cmd.param.Comando = "mkfs";
@@ -217,26 +230,61 @@ string Analizador::identificarParametros(string comando, vector<string> parametr
             if(param.find(">id=") == 0){
                 param = replace_txt(param, ">id=", "");
                 cmd.param.Id = param;
-                cout<<"Id: "<<param<<endl;
+                cout<<" -id: "<<param;
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 cmd.param.Ubicacion = obtenerRuta(param, parametros);
-                cout<<"ubicacion: "<<param<<endl;
+                cout<<" -ubicacion: "<<param;
             }else if(param.find(">type=") == 0){
                 param = replace_txt(param, ">type=", "");
                 cmd.param.Tipo = param;
-                cout<<"Tipo: "<<param<<endl;
+                cout<<" -tipo: "<<param;
             }
         }
+        cout<<endl<<endl;
         cmd.identificarCMD(cmd.param);
+    }else if(comando=="pause"){
+        cout<<"ejecutando: pause"<<endl;
+        cout << "   (Enter para continuar)";
+        char cadena;
+        bool check = true;
+        while(cin.get(cadena) && check)
+        {
+            if( check = (cadena != '\n') )
+            {
+                cout << cadena << '\n';
+            }
+        }
+        cout<<"Continuando ejecución del programa"<<endl;
     }else if(comando == "rep")
     {
         cmd.param.Comando = "rep";
         cout<<"ejecutando: rep"<<endl;
-        //cmd.generarGrafo();
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">id=") == 0){
+                param = replace_txt(param, ">id=", "");
+                cmd.param.Id = param;
+                cout<<" -id: "<<param;
+            }else if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                cmd.param.Ubicacion = obtenerRuta(param, parametros);
+                cout<<" -ubicacion: "<<param;
+            }else if(param.find(">name=") == 0){
+                param = replace_txt(param, ">name=", "");
+                cmd.param.Nombre = param;
+                cout<<" -nombre: "<<param;
+            }
+        }
+        cout<<endl<<endl;
+        cmd.identificarCMD(cmd.param);
     }
     else{
+        if(comando.size()!=0)
         cout<<"Error al reconocer un comando ->"<<comando<<endl;
     }
+    cmd.param.Add=" ";cmd.param.Comando=" ";cmd.param.Delete=" ";cmd.param.Dimensional=" ";
+    cmd.param.Fit=" ";cmd.param.Fs=" ";cmd.param.Id=" ";cmd.param.Nombre=" ";
+    cmd.param.Tamano=" ";cmd.param.Tipo=" ";cmd.param.Ubicacion=" ";cmd.param.Unit=" ";
     return "";
 }

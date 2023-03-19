@@ -9,26 +9,30 @@ int main()
     
     Analizador analisis;
     string entradacmd = "", es_execute="";
+    char enter;
 
     while(entradacmd != "exit")
     {
         cout << "   Proyecto:~$ ";
         getline(cin,entradacmd);
         es_execute = analisis.analizar(entradacmd);//Si es execute me devuela el path
-        cout<<es_execute<<endl;
+        cout<<"Ruta del archivo:"<<es_execute<<endl<<endl;
         if(es_execute!=""){
-            cout<<"Es comando ejecutar...|"<<es_execute<<"|"<<endl;
+            //cout<<"Es comando ejecutar...|"<<es_execute<<"|"<<endl;
 
             FILE *file;
             file = fopen(es_execute.c_str(), "r");
-            char cont[100];
+            char cont[300];
+            string coment="";
             string linea;
 
             if (file != NULL) {
 
-                while (fgets(cont, 100, file) != NULL) {
+                while (fgets(cont, 300, file) != NULL) {
                     if(string(cont).find("#")==0){
-                        cout<<"comentario: "<<string(cont)<<endl;
+                        coment=string(cont);
+                        coment.pop_back();
+                        cout<<"comentario: "<<coment<<endl<<endl;
                     }else{
                         analisis.analizar(string(cont));
                     }
